@@ -51,7 +51,7 @@ public class MapGenerator : MonoBehaviour
 
         ProcessMap();
 
-        int borderSize = 5; // The border size can be changed to increase and decrease the number of wall tiles around the border of the map
+        int borderSize = 1; // The border size can be changed to increase and decrease the number of wall tiles around the border of the map
         int[,] borderedMap = new int[width + borderSize * 2, height + borderSize * 2];
 
         for (int x = 0; x < borderedMap.GetLength(0); x++)
@@ -73,7 +73,6 @@ public class MapGenerator : MonoBehaviour
         meshGen.GenerateMesh(borderedMap, 1); // 1 is a default value
     }
 
-    // NOTE: something in the new functions does not work - ends up with a frame or no removal - look over source code to find the problem
     void ProcessMap()
     {
         List<List<Coord>> wallRegions = GetRegions(1);
@@ -95,7 +94,7 @@ public class MapGenerator : MonoBehaviour
 
         int roomThresholdSize = 50;
 
-        foreach (List<Coord> roomRegion in wallRegions)
+        foreach (List<Coord> roomRegion in roomRegions)
         {
             if (roomRegion.Count < roomThresholdSize)
             {
@@ -152,10 +151,11 @@ public class MapGenerator : MonoBehaviour
             {
                 for (int y = tile.tileY - 1; y <= tile.tileY + 1; y++)
                 {
-                    if (IsInMapRange(x, y) && x == tile.tileX && y == tile.tileY)
+                    if (IsInMapRange(x, y) && (y == tile.tileY || x == tile.tileX))
                     {
                         if (mapFlags[x, y] == 0 && map[x, y] == tileType)
                         {
+                            mapFlags[x, y] = 1;
                             queue.Enqueue(new Coord(x, y));
                         }
                     }
